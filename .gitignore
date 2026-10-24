@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+
+# PyInstaller 产物
+dist/
+build/
+*.spec
+
+# 运行时数据（采集生成，不入库）
+data/articles.json
+data/data.js
+data/pruned.json
+data/hits.json
+data/dismissed.json
+data/collect.log
+data/.bili_last
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/wx_links.txt.done
+data/fav_urls.txt
+
+# assets 开发期大文件（抠图模型 / 人脸调试中间图，非运行时所需）
+assets/isnetis.onnx
+assets/lbpcascade_animeface.xml
+assets/*.png

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大工资讯聚合 · 盘锦校区新生助手</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --line:#e5e9f0; --text:#1f2937; --sub:#6b7280;
+  --blue:#005bac; --blue-l:#e8f1fa; --red:#c0392b; --green:#1e8e5a;
+  --chip:#eef2f7; --chip-on:#005bac; --shadow:0 1px 3px rgba(16,42,80,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+/* ---------- 头部 ---------- */
+header{background:linear-gradient(120deg,#00427e,#0066c0 60%,#0a7ad3);color:#fff;padding:22px 28px 18px}
+header h1{font-size:22px;font-weight:700;letter-spacing:1px}
+header h1 small{font-size:13px;font-weight:400;opacity:.85;margin-left:10px}
+header .meta{margin-top:8px;font-size:12.5px;opacity:.9;display:flex;gap:18px;flex-wrap:wrap}
+.toolbar{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.toolbar input{flex:1;min-width:220px;max-width:460px;padding:9px 14px;border:none;border-radius:8px;font-size:14px;outline:none}
+.toolbar select{padding:9px 10px;border:none;border-radius:8px;font-size:13px;outline:none;cursor:pointer}
+/* ---------- 布局 ---------- */
+.wrap{display:flex;gap:18px;max-width:1360px;margin:18px auto;padding:0 18px;align-items:flex-start}
+aside{width:262px;flex-shrink:0;position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto}
+main{flex:1;min-width:0}
+.panel{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:14px}
+.panel h3{font-size:13px;color:var(--sub);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 .clr{font-size:12px;color:var(--blue);cursor:pointer;font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--chip);color:var(--text);border-radius:999px;padding:4px 11px;font-size:12.5px;cursor:pointer;user-select:none;border:1px solid transparent;transition:.15s}
+.chip:hover{background:#dde6f2}
+.chip.on{background:var(--chip-on);color:#fff}
+.chip .n{opacity:.65;font-size:11px;margin-left:3px}
+.tagidx .chip{font-size:12px;padding:3px 9px}
+.preset{background:rgba(255,255,255,.16);color:#fff;border-radius:999px;padding:6px 15px;font-size:13px;cursor:pointer;user-select:none;transition:.15s}
+.preset:hover{background:rgba(255,255,255,.28)}
+.preset.on{background:#fff;color:var(--blue);font-weight:600}
+.dl{font-size:12px;border-radius:5px;padding:2px 8px;white-space:nowrap;font-weight:600}
+.dl.urgent{background:#fdecea;color:var(--red)}
+.dl.soon{background:#fdf3e7;color:#c77d1a}
+.favbtn{position:absolute;top:10px;right:14px;font-size:15px;color:#d5dae2;cursor:pointer;user-select:none}
+.favbtn.on{color:#e6a817}
+article.card.read h2,.card.read .sum{opacity:.45}
+article.card.read{background:#f7f8fa;box-shadow:none}
+#health{display:none;background:#fdf3e7;border:1px solid #f0c36d;color:#8a5a00;border-radius:10px;padding:10px 16px;margin-bottom:14px;font-size:13px;line-height:1.7}
+#health.err{background:#fdecea;border-color:#e6a09a;color:#8c2f22}
+#health button{margin-left:10px;padding:3px 12px;border:none;border-radius:6px;background:#c77d1a;color:#fff;cursor:pointer;font-size:12px}
+@keyframes flash{0%{box-shadow:0 0 0 3px var(--red)}100%{box-shadow:0 1px 3px rgba(16,42,80,.08)}}
+.card.flash{animation:flash 1.2s ease-in-out 3;box-shadow:0 0 0 2px var(--red)}
+/* ---------- 板块导航（竞赛/学习/科研/论文/学生工作） ---------- */
+.sections{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sections .sec{flex:1;min-width:120px;background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:12px 14px;cursor:pointer;user-select:none;border:2px solid transparent;transition:.15s}
+.sections .sec:hover{border-color:#cfe0f2;background:var(--blue-l)}
+.sections .sec.on{border-color:var(--blue);background:var(--blue-l)}
+.sections .sec .sn{font-size:14px;font-weight:700;color:var(--blue)}
+.sections .sec .sc{font-size:11.5px;color:var(--sub);margin-top:3px}
+/* ---------- 统计条 ---------- */
+.stat{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.stat .box{flex:1;min-width:130px;background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:12px 16px}
+.stat .num{font-size:22px;font-weight:700;color:var(--blue)}
+.stat .lbl{font-size:12px;color:var(--sub);margin-top:2px}
+/* ---------- 竞赛推荐板块 ---------- */
+.competition-panel{background:linear-gradient(135deg,#fff,var(--blue-l));border:1px solid #cfe0f2;border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:14px}
+.competition-panel.hidden #compList{display:none}
+.comp-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.comp-title{font-size:15px;font-weight:700;color:var(--blue)}
+.comp-sub{font-size:12px;color:var(--sub)}
+.comp-toggle{margin-left:auto;font-size:12px;color:var(--blue);cursor:pointer;user-select:none}
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.comp-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+.comp-card .ctop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.comp-card .cname{font-weight:700;font-size:13.5px;color:var(--text)}
+.comp-card .cgrade{background:var(--chip-on);color:#fff;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.comp-card .ctype{font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.comp-card .cwhy{font-size:12px;color:#4b5563;line-height:1.6;margin-top:6px}
+.comp-card .cmeta{font-size:11.5px;color:var(--sub);margin-top:6px;line-height:1.5}
+.comp-card a{word-break:break-all}
+/* ---------- 文章卡片 ---------- */
+.card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:14px 18px 12px 20px;margin-bottom:12px;position:relative;overflow:hidden;transition:opacity .2s}
+.card.read{opacity:.5}
+.card.read:hover{opacity:.85}
+.favbtn{position:absolute;top:10px;right:12px;font-size:18px;cursor:pointer;color:#c9d2de;user-select:none;z-index:2}
+.favbtn:hover{color:#e6a23c}
+.favbtn.on{color:#e6a23c}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+.card.pj::before{background:var(--blue)}
+.card.zc::before{background:#9aa7b8}
+.card .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.badge{font-size:11.5px;border-radius:5px;padding:2px 8px;white-space:nowrap}
+.badge.pj{background:var(--blue-l);color:var(--blue);font-weight:600}
+.badge.zc{background:#eef0f3;color:#5b6774}
+.badge.cat{background:#f3ecfb;color:#7a3fb8}
+.stars{color:var(--red);font-size:13px;letter-spacing:1px;cursor:help}
+.date{color:var(--sub);font-size:12.5px}
+.src{color:var(--sub);font-size:12.5px}
+.card h2{font-size:16px;font-weight:600;line-height:1.45;margin-bottom:6px}
+.card h2 a{color:var(--text)}
+.card h2 a:hover{color:var(--blue);text-decoration:none}
+.card .sum{color:#4b5563;font-size:13px;line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .tags{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+.card .tags .chip{padding:2px 9px;font-size:12px;background:#f2f6fb;color:#3b5b82}
+.card .tags .chip:hover{background:var(--blue-l)}
+.lt{font-size:11.5px;border-radius:5px;padding:2px 8px;white-space:nowrap;cursor:default}
+.lt b{font-weight:600;opacity:.75;margin-right:2px}
+.lt.obj{background:#e8f1fa;color:#1a5fa8}
+.lt.cat2{background:#f3ecfb;color:#7a3fb8}
+.lt.camp{background:#e8f7ee;color:#1e8e5a}
+.lt.col{background:#fdf3e7;color:#c77d1a}
+.lt.site{background:#eef0f3;color:#5b6774}
+.empty{text-align:center;color:var(--sub);padding:60px 0}
+footer{max-width:1360px;margin:10px auto 30px;padding:16px 18px;color:var(--sub);font-size:12.5px;line-height:1.9;text-align:center}
+@media(max-width:900px){.wrap{flex-direction:column}aside{width:100%;position:static;max-height:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>大工资讯聚合<small>盘锦校区新生助手 · 官方信息一站式检索</small></h1>
+  <div class="meta">
+    <span>📅 数据更新：<b id="gen">加载中…</b></span>
+    <span>📮 共 <b id="total">–</b> 条</span>
+    <span>🏫 盘锦校区 <b id="pjN">–</b> 条</span>
+    <span>⚠️ 内容均采集自官网，请以原文为准</span>
+  </div>
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="搜索标题 / 简介 / 标签，如：奖学金、选课、保研…">
+    <select id="sort">
+      <option value="date">按日期（新→旧）</option>
+      <option value="imp">按重要度（高→低）</option>
+      <option value="deadline">按截止时间（最近优先）</option>
+    </select>
+    <select id="limit">
+      <option value="全部">全部时间</option>
+      <option value="本周">本周</option>
+      <option value="本月">本月</option>
+    </select>
+  </div>
+  <div class="toolbar" style="margin-top:10px">
+    <span class="preset on" id="pRdAll">🗂 全部</span>
+    <span class="preset" id="pRdUnread">📭 未读</span>
+    <span class="preset" id="pRdRead">👁 已读</span>
+    <span class="preset" id="pBaoyan">🎯 保研关注</span>
+    <span class="preset" id="pDeadline">⏰ 临期事项</span>
+    <span class="preset" id="pFav">⭐ 只看收藏</span>
+    <span class="preset on" id="pFreshman">👤 新生模式</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="panel">
+      <h3>校区 <span class="clr" data-clr="campus">清除</span></h3>
+      <div class="chips" id="fCampus"></div>
+    </div>
+    <div class="panel">
+      <h3>信息分类 <span class="clr" data-clr="category">清除</span></h3>
+      <div class="chips" id="fCat"></div>
+    </div>
+    <div class="panel">
+      <h3>适用对象 <span class="clr" data-clr="audience">清除</span></h3>
+      <div class="chips" id="fGrade"></div>
+    </div>
+    <div class="panel">
+      <h3>学院 <span class="clr" data-clr="college">清除</span></h3>
+      <div class="chips" id="fCollege"></div>
+    </div>
+    <div class="panel">
+      <h3>来源网站 <span class="clr" data-clr="site">清除</span></h3>
+      <div class="chips" id="fSite"></div>
+    </div>
+    <div class="panel">
+      <h3>快捷筛选 <span class="clr" data-clr="flags">清除</span></h3>
+      <div class="chips" id="fFlags"></div>
+    </div>
+    <div class="panel tagidx">
+      <h3>🏷 标签索引 <span class="clr" data-clr="tags">清除</span></h3>
+      <div class="chips" id="fTags"></div>
+    </div>
+  </aside>
+
+  <main>
+    <div id="health"></div>
+    <div class="sections" id="sectionsNav">
+      <div class="sec on" data-sec=""><div class="sn">🗂 全部</div><div class="sc" id="secAll">加载中…</div></div>
+      <div class="sec" data-sec="竞赛"><div class="sn">🏆 竞赛</div><div class="sc" id="sec竞赛">–</div></div>
+      <div class="sec" data-sec="学习"><div class="sn">📚 学习</div><div class="sc" id="sec学习">–</div></div>
+      <div class="sec" data-sec="科研"><div class="sn">🔬 科研</div><div class="sc" id="sec科研">–</div></div>
+      <div class="sec" data-sec="论文"><div class="sn">📄 论文</div><div class="sc" id="sec论文">–</div></div>
+      <div class="sec" data-sec="学生工作"><div class="sn">👥 学生工作</div><div class="sc" id="sec学生工作">–</div></div>
+    </div>
+    <div class="stat">
+      <div class="box"><div class="num" id="sTotal">–</div><div class="lbl">当前结果</div></div>
+      <div class="box"><div class="num" id="sPj">–</div><div class="lbl">盘锦校区</div></div>
+      <div class="box"><div class="num" id="sHigh">–</div><div class="lbl">高重要度（≥4★）</div></div>
+      <div class="box"><div class="num" id="sWeek">–</div><div class="lbl">7 日内更新</div></div>
+      <div class="box"><div class="num" id="sBy">–</div><div class="lbl">🎯 保研相关</div></div>
+    </div>
+    <div class="competition-panel" id="compPanel">
+      <div class="comp-head"><span class="comp-title">🎖 专业竞赛推荐（智能海洋装备）</span><span class="comp-sub">按推荐年级规划参赛路线 · 宁多勿漏</span><span class="comp-toggle" id="compToggle">收起 ▲</span></div>
+      <div id="compList"></div>
+    </div>
+    <div id="list"></div>
+  </main>
+</div>
+
+<footer>
+  数据来源：大连理工大学主站、盘锦校区官网、盘锦校区教学事务部、学生发展与事务工作部、党政办公室、就业网、学生工作处、教务处、新闻中心<br>
+  简介均为原文摘录；标签由程序依据文章内容自动生成，仅供参考。如有出入，以学校官方网站原文为准。<br>
+  <span style="cursor:pointer;color:var(--blue)" id="exportFav">💾 导出收藏（存到 data\fav_urls.txt 可让收藏永不删除）</span>
+</footer>
+
+<script src="data/data.js"></script>
+<script src="data/competitions.js"></script>
+<script>
+const DATA = window.DUT_DATA || {meta:{},articles:[]};
+const arts = DATA.articles || [];
+// 弹窗“我要看看”跳转定位：?focus=<标题>
+const FOCUS = new URLSearchParams(location.search).get('focus') || '';
+document.getElementById('gen').textContent = DATA.meta.generated || '–';
+document.getElementById('total').textContent = DATA.meta.total ?? arts.length;
+document.getElementById('pjN').textContent = DATA.meta.panjinCount ?? arts.filter(a=>a.campus==='盘锦校区').length;
+
+/* ---------- 打开页面时自检：数据完整性 / 新鲜度 ---------- */
+(function selfCheck(){
+  const el = document.getElementById('health');
+  const problems = [];
+  if(!arts.length){ problems.push('数据为空'); }
+  else{
+    const s = arts[0];
+    for(const k of ['title','url','date','summary','campus','category','importance'])
+      if(!(k in s)) problems.push('字段缺失:'+k);
+  }
+  const gen = DATA.meta.generated;
+  if(gen){
+    const hrs = (Date.now()-new Date(gen.replace(' ','T')))/36e5;
+    if(hrs > 36) problems.push(`数据已 ${Math.round(hrs)} 小时未更新（正常应每日 7:30 与开机时自动刷新）`);
+  } else problems.push('缺少更新时间元数据');
+  if(!problems.length) return;
+  el.style.display='block';
+  el.textContent = '⚠️ 自检发现：' + problems.join('；') +
+    '。修复：重启电脑（开机会自动重新采集），或手动运行 collector.py；排查日志见 data\\collect.log';
+})();
+
+const F = {campus:new Set(), category:new Set(), audience:new Set(), college:new Set(), site:new Set(), tags:new Set(), flags:new Set()};
+const P = {baoyan:false, deadline:false, freshman:true, fav:false, section:''};
+let VIEW = 'all';   // 已读视图：'all' 全部(未读在前/已读沉底) | 'unread' 只看未读 | 'read' 只看已读
+/* ---------- 已读 / 收藏（localStorage） ---------- */
+const READ = new Set(JSON.parse(localStorage.getItem('dut_read')||'[]'));
+const FAV = new Set(JSON.parse(localStorage.getItem('dut_fav')||'[]'));
+function saveLocal(k, set){
+  let arr=[...set];
+  if(arr.length>5000) arr=arr.slice(-5000);
+  localStorage.setItem(k, JSON.stringify(arr));
+}
+const $ = id => document.getElementById(id);
+const cnt = (fn) => arts.filter(fn).length;
+
+/* ---------- 顶部预设 ---------- */
+function bindPreset(id, key){
+  $(id).onclick = ()=>{
+    P[key]=!P[key];
+    $(id).classList.toggle('on', P[key]);
+    render();
+  };
+}
+bindPreset('pBaoyan','baoyan'); bindPreset('pDeadline','deadline');
+bindPreset('pFav','fav'); bindPreset('pFreshman','freshman');
+
+/* ---------- 板块导航（竞赛/学习/科研/论文/学生工作/全部） ---------- */
+(function bindSections(){
+  const SEC_LABEL = {竞赛:'🏆 竞赛', 学习:'📚 学习', 科研:'🔬 科研', 论文:'📄 论文', 学生工作:'👥 学生工作'};
+  // 填充各板块全量计数（含"综合"，综合并入"全部"不单列）
+  const stat = {};
+  arts.forEach(a=>{ const s=a.section||'综合'; stat[s]=(stat[s]||0)+1; });
+  $('#secAll').textContent = '共 '+arts.length+' 条';
+  Object.keys(SEC_LABEL).forEach(s=>{ const el=document.getElementById('sec'+s); if(el) el.textContent=(stat[s]||0)+' 条'; });
+  // 绑定点击：切换板块（再点当前板块=取消，回到全部）
+  document.querySelectorAll('#sectionsNav .sec').forEach(el=>{
+    el.onclick=()=>{
+      const sec=el.dataset.sec;
+      if(P.section===sec){ if(sec!==''){ P.section=''; document.querySelector('#sectionsNav .sec[data-sec=""]').classList.add('on'); el.classList.remove('on'); } }
+      else{
+        P.section=sec;
+        document.querySelectorAll('#sectionsNav .sec').forEach(x=>x.classList.toggle('on', x===el));
+      }
+      render();
+    };
+  });
+})();
+
+/* ---------- 已读/未读 页签（互斥） ---------- */
+const VIEW_LABEL = {all:'🗂 全部', unread:'📭 未读', read:'👁 已读'};
+['all','unread','read'].forEach(v=>{
+  $(`pRd${v==='all'?'All':v==='unread'?'Unread':'Read'}`).onclick = ()=>{
+    VIEW = v;
+    document.querySelectorAll('#pRdAll,#pRdUnread,#pRdRead').forEach(el=>el.classList.remove('on'));
+    document.getElementById('pRd'+ (v==='all'?'All':v==='unread'?'Unread':'Read')).classList.add('on');
+    render();
+  };
+});
+
+/* ---------- 构建筛选器 ---------- */
+function chipGroup(el, items, key){
+  el.innerHTML = '';
+  items.forEach(([label,n])=>{
+    const c = document.createElement('span');
+    c.className='chip'; c.innerHTML = `${label}<span class="n">${n}</span>`;
+    c.onclick = ()=>{
+      F[key].has(label)? F[key].delete(label) : F[key].add(label);
+      c.classList.toggle('on'); render();
+    };
+    el.appendChild(c);
+  });
+}
+function countBy(fn){
+  const m=new Map();
+  arts.forEach(a=>fn(a).forEach(k=>m.set(k,(m.get(k)||0)+1)));
+  return [...m.entries()].sort((x,y)=>y[1]-x[1]);
+}
+chipGroup($('fCampus'), [['盘锦校区',cnt(a=>a.campus==='盘锦校区')],['主校区·全校',cnt(a=>a.campus==='主校区')]], 'campus');
+chipGroup($('fCat'), countBy(a=>[a.category]), 'category');
+chipGroup($('fGrade'), countBy(a=>a.audience||[]), 'audience');
+chipGroup($('fCollege'), countBy(a=>a.college||[]).slice(0,24), 'college');
+chipGroup($('fSite'), countBy(a=>[a.source]), 'site');
+chipGroup($('fTags'), countBy(a=>a.tags).slice(0,50), 'tags');
+chipGroup($('fFlags'), [['🎯 保研相关',cnt(a=>a.baoyan)],['⭐ 已收藏',cnt(a=>FAV.has(a.url))],['★★★★★ 重要',cnt(a=>a.importance===5)],['★★★★ 以上',cnt(a=>a.importance>=4)],['学生工作相关',cnt(a=>a.studentWork)],['涉及盘锦',cnt(a=>a.tags.includes('涉及盘锦'))],['有截止时间',cnt(a=>a.deadline)],['未读',cnt(a=>!READ.has(a.url))]], 'flags');
+document.querySelectorAll('.clr').forEach(b=>b.onclick=()=>{
+  F[b.dataset.clr].clear();
+  const map={campus:'fCampus',category:'fCat',audience:'fGrade',college:'fCollege',site:'fSite',tags:'fTags',flags:'fFlags'};
+  document.querySelectorAll(`#${map[b.dataset.clr]} .chip`).forEach(c=>c.classList.remove('on'));
+  render();
+});
+
+/* ---------- 过滤 + 渲染 ---------- */
+function inRange(date){
+  const lim=$('limit').value; if(!date||lim==='全部') return true;
+  const d=new Date(date); const now=new Date();
+  if(lim==='本周'){const w=new Date(now);w.setDate(now.getDate()-7);return d>=w;}
+  if(lim==='本月'){const m=new Date(now);m.setDate(now.getDate()-30);return d>=m;}
+  return true;
+}
+function match(a){
+  if(P.section && (a.section||'综合')!==P.section) return false;
+  if(P.freshman && a.staff) return false;
+  if(P.baoyan && !a.baoyan) return false;
+  if(P.deadline && !a.deadline) return false;
+  if(VIEW==='unread' && READ.has(a.url)) return false;
+  if(VIEW==='read' && !READ.has(a.url)) return false;
+  if(P.fav && !FAV.has(a.url)) return false;
+  if(F.campus.size){
+    const c=a.campus==='盘锦校区'?'盘锦校区':'主校区·全校';
+    if(!F.campus.has(c)) return false;
+  }
+  if(F.category.size && !F.category.has(a.category)) return false;
+  if(F.audience.size && !(a.audience||[]).some(g=>F.audience.has(g))) return false;
+  if(F.college.size && !(a.college||[]).some(g=>F.college.has(g))) return false;
+  if(F.site.size && !F.site.has(a.source)) return false;
+  if(F.tags.size && !a.tags.some(t=>F.tags.has(t))) return false;
+  if(F.flags.size){
+    const ok=[...F.flags].some(f=>{
+      if(f.startsWith('🎯')) return a.baoyan;
+      if(f==='⭐ 已收藏') return FAV.has(a.url);
+      if(f==='未读') return !READ.has(a.url);
+      if(f==='有截止时间') return !!a.deadline;
+      if(f.startsWith('★★★★★')) return a.importance===5;
+      if(f.startsWith('★★★★')) return a.importance>=4;
+      if(f==='学生工作相关') return a.studentWork;
+      if(f==='涉及盘锦') return a.tags.includes('涉及盘锦');
+      return false;
+    });
+    if(!ok) return false;
+  }
+  const q=$('q').value.trim().toLowerCase();
+  if(q && !(a.title.toLowerCase().includes(q)||a.summary.toLowerCase().includes(q)||a.tags.join(' ').toLowerCase().includes(q))) return false;
+  return inRange(a.date);
+}
+function render(){
+  let list = arts.filter(match);
+  const sortBy=$('sort').value;
+  list.sort((x,y)=>{
+    if(P.fav && FAV.has(x.url)!==FAV.has(y.url)) return FAV.has(x.url)?-1:1; // 收藏优先
+    // 「全部」视图：未读在前，已读灰色沉底
+    if(VIEW==='all' && READ.has(x.url)!==READ.has(y.url)) return READ.has(x.url)?1:-1;
+    if(sortBy==='imp') return (y.importance-x.importance||y.date.localeCompare(x.date));
+    if(sortBy==='deadline') return ((x.deadline||'9999')<(y.deadline||'9999')?-1:1);
+    return y.date.localeCompare(x.date);
+  });
+  $('sTotal').textContent=list.length;
+  $('sPj').textContent=list.filter(a=>a.campus==='盘锦校区').length;
+  $('sHigh').textContent=list.filter(a=>a.importance>=4).length;
+  const wk=new Date(); wk.setDate(wk.getDate()-7);
+  $('sWeek').textContent=list.filter(a=>a.date && new Date(a.date)>=wk).length;
+  $('sBy').textContent=list.filter(a=>a.baoyan).length;
+  const el=$('list');
+  if(!list.length){ el.innerHTML='<div class="empty">没有符合条件的信息，试试减少筛选条件</div>'; return; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  el.innerHTML = list.map(a=>{
+    const pj=a.campus==='盘锦校区';
+    const stars='★'.repeat(a.importance)+'<span style="color:#d5dae2">'+'★'.repeat(5-a.importance)+'</span>';
+    const tags=a.tags.map(t=>`<span class="chip" onclick="quickTag('${t}')">${t}</span>`).join('');
+    const collegeChip=(a.college&&a.college.length)?`<span class="lt col"><b>学院</b>${a.college.join('、')}</span>`:'';
+    const layers=`<span class="lt obj"><b>对象</b>${(a.audience||['全体学生']).join('、')}</span>`
+      +`<span class="lt cat2"><b>分类</b>${a.category}</span>`
+      +`<span class="lt camp"><b>校区</b>${pj?'盘锦校区':'主校区·全校'}${a.tags.includes('涉及盘锦')?'(涉盘锦)':''}</span>`
+      +collegeChip
+      +`<span class="lt site"><b>来源</b>${a.source}</span>`;
+    let dlBadge='';
+    if(a.deadline){
+      const days=Math.round((new Date(a.deadline)-today)/86400000);
+      const txt= days<0 ? `已截止 ${a.deadline.slice(5)}` : days===0 ? `今天截止！` : days===1?'明天截止':`还剩${days}天`;
+      dlBadge=`<span class="dl ${days<=3?'urgent':'soon'}">⏰ ${a.deadline.slice(5)} ${txt}</span>`;
+    }
+    const byTag=a.baoyan?`<span class="badge" style="background:#e8f7ee;color:#1e8e5a">🎯保研相关</span>`:'';
+    return `<article class="card ${pj?'pj':'zc'}${READ.has(a.url)?' read':''}" data-url="${a.url.replace(/"/g,'&quot;')}">
+      <span class="favbtn${FAV.has(a.url)?' on':''}" title="${FAV.has(a.url)?'取消收藏':'收藏'}">${FAV.has(a.url)?'★':'☆'}</span>
+      <div class="top">
+        <span class="badge ${pj?'pj':'zc'}">${pj?'盘锦校区':'主校区·全校'}</span>
+        <span class="badge cat">${a.category}</span>
+        ${byTag}${dlBadge}
+        <span class="stars" title="重要度 ${a.importance}/5 ${a.importanceReason?'· '+a.importanceReason:''}">${stars}</span>
+        <span class="date">📅 ${a.date||'日期待查'}</span>
+        <span class="src">${a.source}${a.studentWork?' · 学生工作':''}</span>
+      </div>
+      <h2><a href="${a.url}" target="_blank" rel="noopener">${a.title}</a></h2>
+      <div class="sum">${a.summary}</div>
+      <div class="tags">${layers}${tags}</div>
+    </article>`;
+  }).join('');
+  if(FOCUS){
+    const idx=list.findIndex(a=>a.title===FOCUS);
+    if(idx>=0){
+      const card=el.querySelectorAll('article.card')[idx];
+      if(card){ card.classList.add('flash'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  }
+}
+/* ---------- 事件委托：点开链接记已读，点星标切换收藏 ---------- */
+$('list').addEventListener('click', e=>{
+  const card=e.target.closest('article.card');
+  if(!card) return;
+  const url=card.dataset.url;
+  if(e.target.classList.contains('favbtn')){
+    if(FAV.has(url)){FAV.delete(url);e.target.classList.remove('on');e.target.textContent='☆';e.target.title='收藏';}
+    else{FAV.add(url);e.target.classList.add('on');e.target.textContent='★';e.target.title='取消收藏';}
+    saveLocal('dut_fav',FAV);
+    return;
+  }
+  if(e.target.closest('a') && !READ.has(url)){
+    READ.add(url); saveLocal('dut_read',READ); card.classList.add('read');
+  }
+});
+/* ---------- 导出收藏：把 FAV 写成本地白名单文件，供采集端读取（收藏永不删除） ---------- */
+$('exportFav').onclick = ()=>{
+  const txt = [...FAV].join('\n');
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fav_urls.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+};
+window.quickTag = t=>{
+  F.tags.add(t);
+  document.querySelectorAll('#fTags .chip').forEach(c=>{ if(c.textContent.includes(t)) c.classList.add('on'); });
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+$('q').addEventListener('input',render);
+$('sort').addEventListener('change',render);
+$('limit').addEventListener('change',render);
+/* ---------- 竞赛推荐板块渲染 ---------- */
+(function renderComp(){
+  const COMP = window.DUT_COMPETITIONS || [];
+  const box = document.getElementById('compList');
+  if(!box || !COMP.length){ const p=document.getElementById('compPanel'); if(p) p.style.display='none'; return; }
+  const typeOrder={'海洋核心':0,'通用高含金':1,'科研基础':2};
+  COMP.sort((a,b)=>(typeOrder[a.type]??9)-(typeOrder[b.type]??9));
+  box.innerHTML = `<div class="comp-grid">` + COMP.map(c=>
+    `<div class="comp-card">
+       <div class="ctop"><span class="cname">${c.name}</span><span class="cgrade">推荐 ${c.gradeTag}</span><span class="ctype">${c.type}</span></div>
+       <div class="cwhy">${c.why}</div>
+       <div class="cmeta">🏛 主办：${c.host}<br>📍 赛区：${c.site}${c.url?`<br>🔗 <a href="${c.url}" target="_blank" rel="noopener">官网入口</a>`:''}</div>
+     </div>`).join('') + `</div>`;
+  const tg=document.getElementById('compToggle');
+  if(tg) tg.onclick=()=>{ const p=document.getElementById('compPanel'); p.classList.toggle('hidden'); tg.textContent = p.classList.contains('hidden')?'展开 ▼':'收起 ▲'; };
+})();
+render();
+</script>
+</body>
+</html>

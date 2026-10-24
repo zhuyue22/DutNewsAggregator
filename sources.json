@@ -1,0 +1,99 @@
+{
+  "_comment": "信源配置数据化。加信源/改信源只需编辑本文件，无需改代码。per_host_qps=该域名每秒抓取上限(令牌桶)",
+  "sources": [
+    { "key": "panjin_tzgg", "name": "盘锦校区·通知公告", "campus": "盘锦校区",
+      "listUrl": "https://panjin.dlut.edu.cn/tzgg.htm",
+      "linkRe": "href=\"((?:info/\\d+/\\d+\\.htm|content\\.jsp\\?[^\"]*wbnewsid=\\d+[^\"]*))\"",
+      "baseUrl": "https://panjin.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "panjin_xqwj", "name": "盘锦校区·校区文件", "campus": "盘锦校区",
+      "listUrl": "https://panjin.dlut.edu.cn/xqwj.htm",
+      "linkRe": "href=\"((?:info/\\d+/\\d+\\.htm|content\\.jsp\\?[^\"]*wbnewsid=\\d+[^\"]*))\"",
+      "baseUrl": "https://panjin.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "pjteach", "name": "盘锦校区·教学事务部", "campus": "盘锦校区",
+      "listUrl": "https://pjteach.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://pjteach.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "xsgzb", "name": "盘锦校区·学生工作部", "campus": "盘锦校区",
+      "listUrl": "https://xsgzb.dlut.edu.cn/index/tzgg.htm",
+      "linkRe": "href=\"(\\.\\./info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://xsgzb.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "pjoffice", "name": "盘锦校区·党政办公室", "campus": "盘锦校区",
+      "listUrl": "https://pjoffice.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://pjoffice.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "hyxy", "name": "化工海洋与生命学院", "campus": "盘锦校区",
+      "listUrl": "https://hyxy.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://hyxy.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "pjcareer", "name": "盘锦校区·就业信息", "campus": "盘锦校区",
+      "listUrl": "https://pjcareer.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://pjcareer.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "dlut_tzgg", "name": "大工主页·通知公告", "campus": "主校区",
+      "listUrl": "https://www.dlut.edu.cn/tzgg.htm",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://www.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "xsc", "name": "学生工作处", "campus": "主校区",
+      "listUrl": "https://xsc.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://xsc.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "teach_jwc", "name": "教务处·教务新闻", "campus": "主校区",
+      "listUrl": "https://teach.dlut.edu.cn/jwcxw_bp.htm",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://teach.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "teach_zytg", "name": "教务处·专业通报", "campus": "主校区",
+      "listUrl": "https://teach.dlut.edu.cn/zytg_bp.htm",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://teach.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "news", "name": "新闻中心", "campus": "主校区",
+      "listUrl": "https://news.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://news.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "gs", "name": "研究生院·招生政策", "campus": "主校区",
+      "listUrl": "http://gs.dlut.edu.cn/yjszs/zcwj1.htm",
+      "linkRe": "href=\"((?:\\.\\./)?info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "http://gs.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "pjxqtw", "name": "盘锦校区·团工委", "campus": "盘锦校区",
+      "listUrl": "https://pjxqtw.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://pjxqtw.dlut.edu.cn", "perHostQps": 1.5 },
+
+    { "key": "lib", "name": "图书馆", "campus": "主校区",
+      "listUrl": "https://lib.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://lib.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "office", "name": "国际合作交流处", "campus": "主校区",
+      "listUrl": "https://office.dlut.edu.cn/",
+      "linkRe": "href=\"(info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://office.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "teach_ksap", "name": "教务处·考试安排", "campus": "主校区",
+      "listUrl": "https://teach.dlut.edu.cn/ksap/ksap.htm",
+      "linkRe": "href=\"(\\.\\./info/\\d+/\\d+\\.htm|info/\\d+/\\d+\\.htm)\"",
+      "baseUrl": "https://teach.dlut.edu.cn", "perHostQps": 1.2 },
+
+    { "key": "com_jxcz", "name": "竞赛·机械创新设计大赛", "campus": "主校区",
+      "listUrl": "http://12umic.hit.edu.cn/20012/list.htm",
+      "linkRe": "href=['\"](/\\d{4}/\\d{4}/c\\d+a\\d+/page\\.htm)['\"]",
+      "baseUrl": "http://12umic.hit.edu.cn", "perHostQps": 1.0 },
+
+    { "key": "com_tzb", "name": "竞赛·挑战杯全国赛", "campus": "主校区",
+      "listUrl": "https://www.tiaozhanbei.net/tzb",
+      "linkRe": "href=\"(/article/\\d+/)\"",
+      "baseUrl": "https://www.tiaozhanbei.net", "perHostQps": 1.0 }
+  ]
+}
