@@ -504,29 +504,55 @@ window.addEventListener('load', ()=>{
   }catch(e){ console.error('板块导航初始化失败:', e); }
 });
 render();
-/* ---------- 桌面软件模式：状态栏 + 刷新（仅在 pywebview 环境显示） ---------- */
+/* ---------- 桌面软件模式：状态栏 + 刷新 + 开机临期提醒横幅 ---------- */
+function showDeadlineBanner(hits){
+  let bar=document.getElementById('deadlineBanner');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='deadlineBanner';
+    bar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#fff5f5;color:#7a0b0b;border-bottom:2px solid #c00;padding:8px 12px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.18);max-height:60vh;overflow:auto';
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML='<b>⏰ '+hits.length+' 条临期事项</b>（3 天内截止，按重要度筛过）<span style="float:right;cursor:pointer;font-weight:bold" onclick="document.getElementById(\'deadlineBanner\').remove()">✕</span>';
+  hits.forEach(h=>{
+    const row=document.createElement('div');
+    row.style.cssText='padding:5px 0;border-top:1px dashed #d8a';
+    const esc=h.title.replace(/'/g,"\\'");
+    row.innerHTML='<span>'+'★'.repeat(Math.min(5,h.importance))+' '+h.deadline.slice(5)+' '+h.title+'</span> '
+      +'<button onclick="location.search=\'?focus='+encodeURIComponent(h.title)+'\';location.reload()" style="cursor:pointer;color:#06c;background:none;border:0;text-decoration:underline">我要看看</button> '
+      +'<button onclick="window.pywebview.api.dismiss(\''+esc+'\').then(()=>{this.parentElement.remove()})" style="cursor:pointer;color:#666;background:none;border:0;text-decoration:underline">不再提醒</button>';
+    bar.appendChild(row);
+  });
+}
 (function initAppBar(){
   const hasApi = window.pywebview && window.pywebview.api;
   if(!hasApi) return;
   const bar=document.getElementById('appbar');
   const st=document.getElementById('appStatus');
   const btn=document.getElementById('appRefresh');
-  if(!bar||!st||!btn) return;
-  bar.style.display='flex';
-  try{ window.pywebview.api.current_status().then(s=>{ st.textContent='🖥 '+s; }); }catch(e){}
-  btn.onclick=()=>{
-    btn.disabled=true; btn.textContent='⏳ 采集中，请稍候…';
-    st.textContent='正在重新采集并归类…';
-    window.pywebview.api.refresh_data().then(msg=>{
-      st.textContent='🖥 '+msg;
-      btn.disabled=false; btn.textContent='🔄 刷新数据';
-    }).catch(()=>{
-      st.textContent='采集失败，请稍后再试';
-      btn.disabled=false; btn.textContent='🔄 刷新数据';
-    });
-  };
-  window.addEventListener('pywebviewready', function(){
+  if(bar&&st&&btn){
+    bar.style.display='flex';
     try{ window.pywebview.api.current_status().then(s=>{ st.textContent='🖥 '+s; }); }catch(e){}
+    btn.onclick=()=>{
+      btn.disabled=true; btn.textContent='⏳ 采集中，请稍候…';
+      st.textContent='正在重新采集并归类…';
+      window.pywebview.api.refresh_data().then(msg=>{
+        st.textContent='🖥 '+msg;
+        btn.disabled=false; btn.textContent='🔄 刷新数据';
+      }).catch(()=>{
+        st.textContent='采集失败，请稍后再试';
+        btn.disabled=false; btn.textContent='🔄 刷新数据';
+      });
+    };
+  }
+  window.addEventListener('pywebviewready', function(){
+    try{ window.pywebview.api.current_status().then(s=>{ if(st) st.textContent='🖥 '+s; }); }catch(e){}
+    try{
+      window.pywebview.api.get_deadlines().then(raw=>{
+        const hits=JSON.parse(raw);
+        if(hits && hits.length) showDeadlineBanner(hits);
+      });
+    }catch(e){}
   });
 })();
 </script>
