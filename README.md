@@ -26,20 +26,23 @@
 ## 下载使用
 
 ### 方式一：直接用打包好的 exe（推荐，无需 Python 环境）
-1. 下载 `release/DutNewsAggregator.exe`（约 14 MB）
-2. 双击运行
-3. 首次启动自动采集一次（需联网），之后每 6 小时自动刷新
 
-> 也可到 GitHub 仓库的 **Releases** 页下载（如有发布）。
+**运行要求**：Windows 10/11 + WebView2 运行时（Win11 自带；Win10 若缺失，首次运行会提示安装微软 WebView2 Evergreen，一键装即可）。
 
-### 方式二：源码运行
+1. 下载 exe：进仓库 `release/` 目录下载 `DutNewsAggregator.exe`（约 14 MB），或点仓库绿色 **Code → Download ZIP** 解压后在 `release/` 里取
+2. 双击运行（首次启动 PyInstaller onefile 会先解压到临时目录，**慢几秒属正常**，之后秒开）
+3. 首次启动自动联网采集一次生成 `data/data.js`，之后每 6 小时自动刷新；也可点界面「🔄 刷新数据」手动触发
+
+> 注：部分校园官网 TLS 证书在非校园网环境下可能握手失败，导致采集部分失败、软件保留上次数据——联网后点「🔄 刷新数据」重试即可。
+
+### 方式二：源码运行（需 Python 3.10+，运行要求同上需 WebView2）
 ```bash
 git clone https://github.com/zhuyue22/DutNewsAggregator.git
 cd DutNewsAggregator
 pip install pywebview
 python app.py
 ```
-首次运行会自动采集生成 `data/data.js`。
+首次运行会自动采集生成 `data/data.js`（同上，需联网；采集规则在 `rule_set.json`，可自行调整）。
 
 ## 技术栈
 - **采集**：Python 标准库（urllib.request / http.cookiejar / sqlite3 / re），无第三方 HTTP 依赖
