@@ -177,7 +177,9 @@ def main():
                 win.hide()
             except Exception:
                 pass
-        if auto_refresh and _needs_refresh():
+        # 普通打开：总是自动采集一次（无需用户手动运行采集文件/点刷新）；
+        # 开机自启(--autostart)：仅数据明显过期(>6h)才采集，避免拖慢开机。
+        if auto_refresh and ((not autostart) or _needs_refresh()):
             threading.Thread(target=api.refresh_data, daemon=True).start()
         if autostart:
             # 开机模式：有临期才弹窗，无则静默后台
