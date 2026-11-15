@@ -99,10 +99,26 @@ def _check_deadlines():
 class Api:
     """暴露给前端 JavaScript 调用（window.pywebview.api.*）。"""
 
+    def _log_debug(self, msg):
+        """写采集调试日志到 ROOT/debug.log，便于排障（普通用户也可查看）。"""
+        try:
+            with open(ROOT / "debug.log", "a", encoding="utf-8") as f:
+                f.write(f"[{datetime.now():%m-%d %H:%M:%S}] {msg}\n")
+        except Exception:
+            pass
+
     def refresh_data(self):
-        from collector_eng import run_collect
+        try:
+            from collector_eng import run_collect
+        except Exception as e:
+            import traceback
+            self._log_debug(f"import collector_eng 失败：{e}\n{traceback.format_exc()}")
+            return f"采集失败：{e}"
+        self._log_debug("开始采集（打开自动触发或点刷新按钮）")
         try:
             meta, stat = run_collect(sectionize=True)
+            self._log_debug(
+                f"采集完成：库内 {meta['total']} 条，新抓 {stat['fetched']}、失败 {stat['failed']}、耗时 {stat['elapsed']:.0f}s")
             for win in _windows:
                 try:
                     win.evaluate_js("location.reload();")
@@ -112,6 +128,8 @@ class Api:
                     f"本次新抓 {stat['fetched']}、失败 {stat['failed']}，"
                     f"耗时 {stat['elapsed']:.0f}s")
         except Exception as e:
+            import traceback
+            self._log_debug(f"采集失败：{e}\n{traceback.format_exc()}")
             return f"采集失败：{e}"
 
     def current_status(self):
@@ -172,6 +190,8 @@ def main():
     _windows.append(win)
 
     def _boot():
+        api._log_debug(
+            f"boot: auto_refresh={auto_refresh} autostart={autostart} needs_refresh={_needs_refresh()}")
         if autostart:
             try:
                 win.hide()
@@ -180,6 +200,7 @@ def main():
         # 普通打开：总是自动采集一次（无需用户手动运行采集文件/点刷新）；
         # 开机自启(--autostart)：仅数据明显过期(>6h)才采集，避免拖慢开机。
         if auto_refresh and ((not autostart) or _needs_refresh()):
+            api._log_debug("boot: 触发自动采集线程")
             threading.Thread(target=api.refresh_data, daemon=True).start()
         if autostart:
             # 开机模式：有临期才弹窗，无则静默后台

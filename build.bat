@@ -17,7 +17,8 @@ set APPDIR=%CD%
   --add-data "index.html;." ^
   --add-data "data;data" ^
   --add-data "sources.json;." ^
-  --add-data "assets;assets" ^
+  --add-data "rule_set.json;." ^
+  --add-data "assets\icon.ico;assets" ^
   --hidden-import collector ^
   --hidden-import collector_eng ^
   --hidden-import eng_lib ^
